@@ -25,7 +25,6 @@ export const createSonarrService = ({ url, apiKey }: Params) => {
   });
 
   const getShows = async () => {
-    // Placeholder for fetching shows from Sonarr
     const { data } = await sonarrClient.get<Series[]>('/api/v3/series');
 
     return data;

@@ -24,21 +24,15 @@ export const createSignalService = ({ url, sender }: Params) => {
       timestamp: string;
     };
 
-    const response = await client.post<SendMessageData>('/v2/send', {
+    const { data } = await client.post<SendMessageData>('/v2/send', {
       message,
       number: sender,
       recipients,
     });
 
-    if (response.status >= 200 && response.status < 300) {
-      return {
-        timestamp: Number(response.data.timestamp),
-      };
-    }
-
-    throw new Error(
-      `Failed to send Signal message: ${response.status.toString()} ${response.statusText}`,
-    );
+    return {
+      timestamp: Number(data.timestamp),
+    };
   };
 
   return {
