@@ -1,6 +1,7 @@
 import { createSonarrService } from './services/sonarr-service.js';
 import { createDatabase } from './services/database-service.js';
 import { createSignalService } from './services/signal-service.js';
+import * as cron from 'node-cron';
 
 // Built in to Node. Awesome.
 process.loadEnvFile();
@@ -26,7 +27,7 @@ const config = {
   DB_PATH: getEnvironmentVariableOrThrow('DB_PATH'),
 };
 
-(async () => {
+const sendShowMessage = async () => {
   const sonarrService = createSonarrService({
     url: config.SONARR_URL,
     apiKey: config.SONARR_API_KEY,
@@ -66,4 +67,8 @@ const config = {
   });
 
   await saveDatabase(database);
-})().catch(console.error);
+};
+
+cron.schedule('0 9-17/2 * * *', sendShowMessage, {
+  timezone: 'Australia/Melbourne',
+});
