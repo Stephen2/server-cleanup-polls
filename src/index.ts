@@ -2,9 +2,12 @@ import { createSonarrService } from './services/sonarr-service.js';
 import { createDatabase } from './services/database-service.js';
 import { createSignalService } from './services/signal-service.js';
 import * as cron from 'node-cron';
+import fs from 'node:fs';
 
 // Built in to Node. Awesome.
-process.loadEnvFile();
+if (fs.existsSync('.env')) {
+  process.loadEnvFile();
+}
 
 const getEnvironmentVariableOrThrow = (key: string): string => {
   const environmentVariable = process.env[key];
