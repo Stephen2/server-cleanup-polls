@@ -30,6 +30,10 @@ const config = {
   DB_PATH: getEnvironmentVariableOrThrow('DB_PATH'),
 };
 
+const log = (message: string) => {
+  console.log(`[${new Date().toISOString()}] ${message}`);
+};
+
 const sendShowMessage = async () => {
   const sonarrService = createSonarrService({
     url: config.SONARR_URL,
@@ -53,6 +57,8 @@ const sendShowMessage = async () => {
     throw new Error('No shows found that have not been polled before');
   }
 
+  log(`Got biggest show: ${biggestShow.title}`);
+
   const { timestamp } = await signalService.sendMessage({
     message: `
       Show: ${biggestShow.title}\n
@@ -63,6 +69,8 @@ const sendShowMessage = async () => {
     recipients: [config.SIGNAL_GROUP],
   });
 
+  log(`Sent Signal message: ${timestamp.toString()}`);
+
   // Save to datbase
   database.seriesPolled.push({
     sonarrSeriesId: biggestShow.id,
@@ -70,6 +78,8 @@ const sendShowMessage = async () => {
   });
 
   await saveDatabase(database);
+
+  log('Saved database');
 };
 
 cron.schedule('0 9-17/2 * * *', sendShowMessage, {
